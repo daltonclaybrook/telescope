@@ -1,0 +1,21 @@
+{
+  "name": "telescope",
+  "version": "0.1.0",
+  "description": "Slackbot that helps teams scope tickets in secret",
+  "main": "index.js",
+  "repository": "git@github.com:daltonclaybrook/telescope.git",
+  "author": "Dalton Claybrook",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.23",
+    "@types/node": "^11.11.4",
+    "ts-node": "^8.0.3",
+    "tslint": "^5.14.0",
+    "typescript": "^3.3.4000"
+  },
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'",
+    "build": "tsc"
+  }
+}
