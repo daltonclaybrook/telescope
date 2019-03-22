@@ -1,6 +1,7 @@
 import { APIGatewayEvent, APIGatewayEventRequestContext, APIGatewayProxyResult } from 'aws-lambda';
 import redis from 'redis';
 import { promisify } from 'util';
+import { makeMessage, Message } from './message';
 
 const client = redis.createClient({
     host: process.env.REDIS_HOST,
@@ -21,9 +22,15 @@ const lambdaHandler = async (event?: APIGatewayEvent, context?: APIGatewayEventR
     const reply = await hset('key1', 'field1', 'fizzbuzz');
     console.log(`no longer quitting redis: ${reply}`);
 
+    const body = (event && event.body) ? event.body : '';
+    const message = makeMessage(body);
+    if (!message) {
+        throw new Error('invalid message payload');
+    }
+
     return {
         statusCode: 200,
-        body: existing,
+        body: `Thanks for the message, ${message.userName}.`,
     };
 };
 
