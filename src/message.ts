@@ -35,7 +35,7 @@ const getMessageType = (message: Message): MessageTypeContext | null => {
     } else if (command === 'help') {
         return { type: MessageType.Help };
     } else if (!isNaN(score)) {
-        return { type: MessageType.Start, context: score };
+        return { type: MessageType.Scope, context: score };
     } else {
         return null;
     }
