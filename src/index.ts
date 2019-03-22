@@ -11,12 +11,15 @@ const client = redis.createClient({
 const hget = promisify(client.hget).bind(client);
 const hset = promisify(client.hset).bind(client);
 
-const lambdaHandler = async (event?: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
+interface Event {
+    body?: string;
+}
+
+const lambdaHandler = async (event: Event): Promise<APIGatewayProxyResult> => {
     console.log('handling...');
     await demonstrateRedis();
 
-    const body = (event && event.body) ? event.body : '';
-    const message = makeMessage(body);
+    const message = makeMessage(event.body || '');
     if (!message) {
         return respond(`invalid message payload`, true, 400);
     }
@@ -66,7 +69,7 @@ const respond = (text: string, ephemeral?: boolean, statusCode?: number): APIGat
 
 if (process.env.DEBUG) {
     console.log('calling handler...');
-    lambdaHandler().then((result: APIGatewayProxyResult) => {
+    lambdaHandler({ body: 'test' }).then((result: APIGatewayProxyResult) => {
         console.log(JSON.stringify(result));
     });
 }
