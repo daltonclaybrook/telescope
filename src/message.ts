@@ -9,6 +9,38 @@ interface Message {
     text: string;
 }
 
+enum MessageType {
+    Start,
+    Scope,
+    Stop,
+    Help,
+}
+
+interface MessageTypeContext {
+    type: MessageType;
+    context?: string | number;
+}
+
+const getMessageType = (message: Message): MessageTypeContext | null => {
+    const components = message.text.split(' ');
+    if (components.length < 1) { return null; }
+    const command = components[0].toLowerCase();
+    const score = parseInt(components[0], 10);
+
+    if (components.length > 1 && command === 'start') {
+        const summary = components.slice(1).join(' ');
+        return { type: MessageType.Start, context: summary };
+    } else if (command === 'stop') {
+        return { type: MessageType.Stop };
+    } else if (command === 'help') {
+        return { type: MessageType.Help };
+    } else if (!isNaN(score)) {
+        return { type: MessageType.Start, context: score };
+    } else {
+        return null;
+    }
+};
+
 const isValidMessage = (message: Message): boolean => {
     return (
         typeof message.teamId === 'string' &&
@@ -33,4 +65,4 @@ const makeMessage = (body: string): Message | null => {
     return isValidMessage(message) ? message : null;
 };
 
-export { Message, makeMessage };
+export { Message, makeMessage, MessageType, getMessageType };

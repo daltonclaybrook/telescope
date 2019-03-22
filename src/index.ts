@@ -1,7 +1,7 @@
 import { APIGatewayEvent, APIGatewayEventRequestContext, APIGatewayProxyResult } from 'aws-lambda';
 import redis from 'redis';
 import { promisify } from 'util';
-import { makeMessage, Message } from './message';
+import { getMessageType, makeMessage, MessageType } from './message';
 
 const client = redis.createClient({
     host: process.env.REDIS_HOST,
@@ -11,8 +11,37 @@ const client = redis.createClient({
 const hget = promisify(client.hget).bind(client);
 const hset = promisify(client.hset).bind(client);
 
-const lambdaHandler = async (event?: APIGatewayEvent, context?: APIGatewayEventRequestContext): Promise<APIGatewayProxyResult> => {
+const lambdaHandler = async (event?: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
     console.log('handling...');
+    await demonstrateRedis();
+
+    const body = (event && event.body) ? event.body : '';
+    const message = makeMessage(body);
+    if (!message) {
+        return respond(`invalid message payload`, true, 400);
+    }
+
+    const dontUnderstand = 'I don\'t understand. Try typing `/scope help` for suggestions.';
+    const context = getMessageType(message);
+    if (!context) {
+        return respond(dontUnderstand);
+    }
+
+    switch (context.type) {
+        case MessageType.Start:
+            return respond(`will start scoping with summary: '${context.context}'`);
+        case MessageType.Scope:
+            return respond(`scope: ${context.context}`);
+        case MessageType.Stop:
+            return respond('will stop scoping');
+        case MessageType.Help:
+            return respond('will help');
+        default:
+            return respond(dontUnderstand);
+    }
+};
+
+const demonstrateRedis = async () => {
     const existing = await hget('key1', 'field1');
     if (existing) {
         console.log(`key1 - field1: ${existing}`);
@@ -21,16 +50,17 @@ const lambdaHandler = async (event?: APIGatewayEvent, context?: APIGatewayEventR
     }
     const reply = await hset('key1', 'field1', 'fizzbuzz');
     console.log(`no longer quitting redis: ${reply}`);
+};
 
-    const body = (event && event.body) ? event.body : '';
-    const message = makeMessage(body);
-    if (!message) {
-        throw new Error('invalid message payload');
-    }
-
+const respond = (text: string, ephemeral?: boolean, statusCode?: number): APIGatewayProxyResult => {
+    const type = (ephemeral || true) ? 'ephemeral' : 'in_channel';
+    const payload = {
+        response_type: type,
+        text,
+    };
     return {
-        statusCode: 200,
-        body: `Thanks for the message, ${message.userName}.`,
+        statusCode: statusCode || 200,
+        body: JSON.stringify(payload),
     };
 };
 
