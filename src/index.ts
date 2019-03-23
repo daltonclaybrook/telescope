@@ -28,6 +28,9 @@ const lambdaHandler = async (event: Event): Promise<APIGatewayProxyResult> => {
         case MessageType.Scope:
             console.log('handling scope...');
             return handlers.scope(message, context);
+        case MessageType.Check:
+            console.log('handling check...');
+            return handlers.check();
         case MessageType.Stop:
             console.log('handling stop...');
             return handlers.stop();

@@ -17,7 +17,7 @@ export default async (): Promise<APIGatewayProxyResult> => {
 
     const firstValue = parseInt(Object.values(responses)[0], 10);
     const responseString = Object.keys(responses)
-        .map((key) => `<@${key}>: *${responses[key]}*`)
+        .map((userId) => `<@${userId}>: *${responses[userId]}*`)
         .join('\n');
 
     const allSame = Object.values(responses)

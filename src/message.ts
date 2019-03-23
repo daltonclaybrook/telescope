@@ -12,6 +12,7 @@ interface Message {
 enum MessageType {
     Start,
     Scope,
+    Check,
     Stop,
     Help,
 }
@@ -26,6 +27,10 @@ interface ScopeMessageContext {
     score: number;
 }
 
+interface CheckMessageContext {
+    type: MessageType.Check;
+}
+
 interface StopMessageContext {
     type: MessageType.Stop;
 }
@@ -34,7 +39,7 @@ interface HelpMessageContext {
     type: MessageType.Help;
 }
 
-type MessageContext = StartMessageContext | ScopeMessageContext | StopMessageContext | HelpMessageContext;
+type MessageContext = StartMessageContext | ScopeMessageContext | CheckMessageContext | StopMessageContext | HelpMessageContext;
 
 const getMessageContext = (message: Message): MessageContext | null => {
     const components = message.text.split(' ');
@@ -45,6 +50,8 @@ const getMessageContext = (message: Message): MessageContext | null => {
     if (components.length > 1 && command === 'start') {
         const summary = components.slice(1).join(' ');
         return { type: MessageType.Start, summary };
+    } else if (command === 'check') {
+        return { type: MessageType.Check };
     } else if (command === 'stop') {
         return { type: MessageType.Stop };
     } else if (command === 'help') {
@@ -86,6 +93,7 @@ export {
     MessageContext,
     StartMessageContext,
     ScopeMessageContext,
+    CheckMessageContext,
     StopMessageContext,
     HelpMessageContext,
     makeMessage,
