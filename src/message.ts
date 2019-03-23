@@ -80,4 +80,14 @@ const makeMessage = (body: string): Message | null => {
     return isValidMessage(message) ? message : null;
 };
 
-export { Message, makeMessage, MessageType, getMessageContext };
+export {
+    Message,
+    MessageType,
+    MessageContext,
+    StartMessageContext,
+    ScopeMessageContext,
+    StopMessageContext,
+    HelpMessageContext,
+    makeMessage,
+    getMessageContext,
+};
