@@ -8,5 +8,10 @@ export default async (context: StartMessageContext): Promise<APIGatewayProxyResu
     await store.deleteKey(context.summary);
     console.log(`setting current: ${context.summary}`);
     await store.setValueForKey('current', context.summary);
-    return respond('Let the scoping begin! Run `/scope stop` to stop scoping.');
+    const response = `Scoping has started for: *${context.summary}*\n` +
+        'Add your scope with `/scope <score>`\n' +
+        'Check progress with `/scope check`\n' +
+        'Finished? run `/scope stop` to see the results.\n' +
+        '_Happy scoping!_';
+    return respond(response, false);
 };

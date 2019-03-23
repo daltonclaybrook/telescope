@@ -2,11 +2,10 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 import respond from '../respond';
 
 export default (): APIGatewayProxyResult => {
-    const response = 'To start scoping a new issue, run `/scope start <summary>`\n' +
-        'For example: `/scope start Drop Texture Support`\n\n' +
-        'To add your score for the current issue, run `/scope <score>`\n' +
-        'For example: `/scope 13`\n\n' +
-        'To stop scoping and see results, run `/scope stop`\n\n' +
-        'To get help, run... well... you already know how to do that. ;)';
+    const response = '- *Start scoping a new issue*: `/scope start <summary>`\n' +
+        '- *Add your score for the current issue*: `/scope <score>`\n' +
+        '- *Get info about the current issue*: `/scope check`\n' +
+        '- *Stop scoping and see results*: `/scope stop`\n' +
+        '- *Get help*: `/scope help`';
     return respond(response);
 };
