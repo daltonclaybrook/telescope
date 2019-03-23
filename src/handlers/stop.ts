@@ -1,5 +1,5 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
-import respond from '../respond';
+import { respond } from '../respond';
 import store from '../store';
 
 export default async (): Promise<APIGatewayProxyResult> => {

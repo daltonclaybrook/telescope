@@ -7,6 +7,7 @@ interface Message {
     userName: string;
     command: string;
     text: string;
+    responseURL: string;
 }
 
 enum MessageType {
@@ -70,7 +71,8 @@ const isValidMessage = (message: Message): boolean => {
         typeof message.userId === 'string' &&
         typeof message.userName === 'string' &&
         typeof message.command === 'string' &&
-        typeof message.text === 'string'
+        typeof message.text === 'string' &&
+        typeof message.responseURL === 'string'
     );
 };
 
@@ -83,6 +85,7 @@ const makeMessage = (body: string): Message | null => {
         userName: query.user_name as string,
         command: query.command as string,
         text: query.text as string,
+        responseURL: query.response_url as string,
     };
     return isValidMessage(message) ? message : null;
 };

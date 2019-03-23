@@ -1,6 +1,6 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
 import { StartMessageContext } from '../message';
-import respond from '../respond';
+import { respond } from '../respond';
 import store from '../store';
 
 export default async (context: StartMessageContext): Promise<APIGatewayProxyResult> => {

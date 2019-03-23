@@ -14,7 +14,7 @@ export default (lambdaHandler: Handler) => {
     // const text = encodeURIComponent('8');
     // const text = encodeURIComponent('stop');
 
-    const testBody = `team_id=abc123&channel_id=abc123&user_id=${userId}&user_name=${user}&command=%2Fscope&text=${text}`;
+    const testBody = `team_id=abc123&channel_id=abc123&user_id=${userId}&user_name=${user}&command=%2Fscope&text=${text}&response_url=https%3A%2F%2Ffoo.com%2Fthis%2Fis%2Fpath`;
 
     console.log('calling handler...');
     lambdaHandler({ body: testBody }).then((result: APIGatewayProxyResult) => {
