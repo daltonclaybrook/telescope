@@ -9,6 +9,6 @@ export default async (message: Message, context: ScopeMessageContext): Promise<A
         return respond('You\'re not scoping anything right now. Start by running `/scope start <summary>`.');
     }
     await store.setHashValue(summary, message.userId, context.score.toString());
-    sendDelayedResponse(`<@${message.userId}> has added a score!`, message.responseURL, false);
+    await sendDelayedResponse(`<@${message.userId}> has added a score!`, message.responseURL, false);
     return respondEmpty();
 };

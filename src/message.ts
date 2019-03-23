@@ -78,6 +78,7 @@ const isValidMessage = (message: Message): boolean => {
 
 const makeMessage = (body: string): Message | null => {
     const query = querystring.parse(body);
+    console.log(`parsed slack message: ${JSON.stringify(query)}`);
     const message: Message = {
         teamId: query.team_id as string,
         channelId: query.channel_id as string,
