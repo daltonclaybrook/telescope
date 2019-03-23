@@ -10,9 +10,9 @@ export default (lambdaHandler: Handler) => {
     const userId = encodeURIComponent('abc123');
     // const userId = encodeURIComponent('def456');
 
-    // const text = encodeURIComponent('start Do the thing');
+    const text = encodeURIComponent('start Do the thing');
     // const text = encodeURIComponent('8');
-    const text = encodeURIComponent('stop');
+    // const text = encodeURIComponent('stop');
 
     const testBody = `team_id=abc123&channel_id=abc123&user_id=${userId}&user_name=${user}&command=%2Fscope&text=${text}`;
 
