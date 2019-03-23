@@ -2,7 +2,7 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 import debug from './debug';
 import handlers from './handlers';
 import { getMessageContext, makeMessage, MessageType } from './message';
-import respond from './respond';
+import { respond } from './respond';
 
 interface Event {
     body?: string;
