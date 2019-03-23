@@ -1,7 +1,7 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
 import redis from 'redis';
 import { promisify } from 'util';
-import { getMessageType, makeMessage, MessageType } from './message';
+import { getMessageContext, makeMessage, MessageType } from './message';
 import respond from './respond';
 
 const client = redis.createClient({
@@ -27,7 +27,7 @@ const lambdaHandler = async (event: Event): Promise<APIGatewayProxyResult> => {
     }
 
     const dontUnderstand = 'I don\'t understand. Try typing `/scope help` for suggestions.';
-    const context = getMessageType(message);
+    const context = getMessageContext(message);
     if (!context) {
         return respond(dontUnderstand);
     }
@@ -36,29 +36,20 @@ const lambdaHandler = async (event: Event): Promise<APIGatewayProxyResult> => {
     switch (context.type) {
         case MessageType.Start:
             console.log('handling start...');
-            if (typeof context.context === 'string') {
-                summary = context.context;
-                console.log(`deleting: ${summary}`);
-                await deleteKey(summary);
-                console.log(`setting current: ${summary}`);
-                await set('current', summary);
-                return respond('Let the scoping begin! Run `/scope stop` to stop scoping.');
-            } else {
-                return respond(dontUnderstand);
-            }
+            console.log(`deleting: ${context.summary}`);
+            await deleteKey(context.summary);
+            console.log(`setting current: ${context.summary}`);
+            await set('current', context.summary);
+            return respond('Let the scoping begin! Run `/scope stop` to stop scoping.');
         case MessageType.Scope:
             console.log('handling scope...');
-            if (typeof context.context === 'number') {
-                const scope = context.context;
-                summary = await get('current');
-                if (summary.length <= 0) {
-                    return respond('You\'re not scoping anything right now. Start by running `/scope start <summary>`.');
-                }
-                await hset(summary, message.userId, scope.toString());
-                return respond(`Issue: *${summary}*\nYour scope: *${scope}*`);
-            } else {
-                return respond(dontUnderstand);
+            const score = context.score;
+            summary = await get('current');
+            if (summary.length <= 0) {
+                return respond('You\'re not scoping anything right now. Start by running `/scope start <summary>`.');
             }
+            await hset(summary, message.userId, score.toString());
+            return respond(`Issue: *${summary}*\nYour scope: *${score}*`);
         case MessageType.Stop:
             console.log('handling stop...');
             summary = await get('current');

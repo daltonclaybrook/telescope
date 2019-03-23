@@ -16,12 +16,27 @@ enum MessageType {
     Help,
 }
 
-interface MessageTypeContext {
-    type: MessageType;
-    context?: string | number;
+interface StartMessageContext {
+    type: MessageType.Start;
+    summary: string;
 }
 
-const getMessageType = (message: Message): MessageTypeContext | null => {
+interface ScopeMessageContext {
+    type: MessageType.Scope;
+    score: number;
+}
+
+interface StopMessageContext {
+    type: MessageType.Stop;
+}
+
+interface HelpMessageContext {
+    type: MessageType.Help;
+}
+
+type MessageContext = StartMessageContext | ScopeMessageContext | StopMessageContext | HelpMessageContext;
+
+const getMessageContext = (message: Message): MessageContext | null => {
     const components = message.text.split(' ');
     if (components.length < 1) { return null; }
     const command = components[0].toLowerCase();
@@ -29,13 +44,13 @@ const getMessageType = (message: Message): MessageTypeContext | null => {
 
     if (components.length > 1 && command === 'start') {
         const summary = components.slice(1).join(' ');
-        return { type: MessageType.Start, context: summary };
+        return { type: MessageType.Start, summary };
     } else if (command === 'stop') {
         return { type: MessageType.Stop };
     } else if (command === 'help') {
         return { type: MessageType.Help };
     } else if (!isNaN(score)) {
-        return { type: MessageType.Scope, context: score };
+        return { type: MessageType.Scope, score };
     } else {
         return null;
     }
@@ -65,4 +80,4 @@ const makeMessage = (body: string): Message | null => {
     return isValidMessage(message) ? message : null;
 };
 
-export { Message, makeMessage, MessageType, getMessageType };
+export { Message, makeMessage, MessageType, getMessageContext };
