@@ -1,4 +1,5 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
+import fetch, { Response } from 'node-fetch';
 
 const respond = (text: string, ephemeral?: boolean, statusCode?: number): APIGatewayProxyResult => {
     const isEphemeral = (ephemeral !== undefined) ? ephemeral : true;
@@ -17,7 +18,7 @@ const respondEmpty = (): APIGatewayProxyResult => {
     return { statusCode: 200, body: '' };
 };
 
-const sendDelayedResponse = (text: string, url: string, ephemeral?: boolean): Promise<void> => {
+const sendDelayedResponse = (text: string, url: string, ephemeral?: boolean): Promise<Response> => {
     const isEphemeral = (ephemeral !== undefined) ? ephemeral : true;
     const type = (isEphemeral) ? 'ephemeral' : 'in_channel';
     return fetch(url, {
@@ -29,7 +30,7 @@ const sendDelayedResponse = (text: string, url: string, ephemeral?: boolean): Pr
             text,
             response_type: type,
         }),
-    }).then((_) => { return; });
+    });
 };
 
 export { respond, respondEmpty, sendDelayedResponse };
