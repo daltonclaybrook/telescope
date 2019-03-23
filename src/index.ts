@@ -1,19 +1,7 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
-import redis from 'redis';
-import { promisify } from 'util';
 import { getMessageContext, makeMessage, MessageType } from './message';
 import respond from './respond';
-
-const client = redis.createClient({
-    host: process.env.REDIS_HOST,
-    port: parseInt(process.env.REDIS_PORT || '', 10),
-});
-
-const hget = promisify(client.hget).bind(client);
-const hset = promisify(client.hset).bind(client);
-const set = promisify(client.set).bind(client);
-const get = promisify(client.get).bind(client);
-const hgetall = promisify(client.hgetall).bind(client);
+import store from './store';
 
 interface Event {
     body?: string;
@@ -37,28 +25,28 @@ const lambdaHandler = async (event: Event): Promise<APIGatewayProxyResult> => {
         case MessageType.Start:
             console.log('handling start...');
             console.log(`deleting: ${context.summary}`);
-            await deleteKey(context.summary);
+            await store.deleteKey(context.summary);
             console.log(`setting current: ${context.summary}`);
-            await set('current', context.summary);
+            await store.setValueForKey('current', context.summary);
             return respond('Let the scoping begin! Run `/scope stop` to stop scoping.');
         case MessageType.Scope:
             console.log('handling scope...');
             const score = context.score;
-            summary = await get('current');
+            summary = await store.getValueForKey('current');
             if (summary.length <= 0) {
                 return respond('You\'re not scoping anything right now. Start by running `/scope start <summary>`.');
             }
-            await hset(summary, message.userId, score.toString());
+            await store.setHashValue(summary, message.userId, score.toString());
             return respond(`Issue: *${summary}*\nYour scope: *${score}*`);
         case MessageType.Stop:
             console.log('handling stop...');
-            summary = await get('current');
+            summary = await store.getValueForKey('current');
             if (!summary || summary.length <= 0) {
                 return respond('You\'re not scoping anything right now. Start by running `/scope start <summary>`.');
             }
-            const responses = await hgetall(summary);
-            await deleteKey(summary);
-            await deleteKey('current');
+            const responses = await store.getAllHashValues(summary);
+            await store.deleteKey(summary);
+            await store.deleteKey('current');
 
             if (!responses || Object.keys(responses).length === 0) {
                 return respond(`No one scoped the issue: ${summary}`);
@@ -82,18 +70,6 @@ const lambdaHandler = async (event: Event): Promise<APIGatewayProxyResult> => {
     }
 };
 
-const deleteKey = async (key: string): Promise<number> => {
-    return new Promise((resolve, reject) => {
-        client.del(key, (err: Error | null, reply: number) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(reply);
-            }
-        });
-    });
-};
-
 const mentionUserId = (userId: string): string => {
     return `<@${userId}>`;
 };
@@ -114,10 +90,10 @@ if (process.env.DEBUG) {
     console.log('calling handler...');
     lambdaHandler({ body: testBody }).then((result: APIGatewayProxyResult) => {
         console.log(JSON.stringify(result, null, 2));
-        client.quit();
+        store.quit();
     }).catch((reason) => {
         console.log(`failed with reason: ${reason}`);
-        client.quit();
+        store.quit();
     });
 }
 
