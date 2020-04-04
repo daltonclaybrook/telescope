@@ -23,11 +23,6 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@types/aws-lambda@^8.10.23":
-  version "8.10.47"
-  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.47.tgz#9ec9e730e78d1f3180be37cf55ab0815b96b225d"
-  integrity sha512-FIZjS1alDbH7qFpJxghmyS2g7h+DJjBj6Qhf2F4Nkz4LR+alTSvThQEAR2j9yRt7qlxDDxK/EagXDCURRSxo8A==
-
 "@types/body-parser@*":
   version "1.19.0"
   resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.19.0.tgz#0685b3c47eb3006ffed117cdd55164b61f80538f"

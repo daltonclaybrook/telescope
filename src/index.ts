@@ -4,13 +4,9 @@ import { respond } from './helpers/respond';
 import express, { Request, Response } from 'express';
 
 const app = express();
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 
 const PORT = 3000;
-
-interface Event {
-    body?: string;
-}
 
 app.post('/', (req: Request, res: Response) => {
     const body = req.body.urlencoded;
