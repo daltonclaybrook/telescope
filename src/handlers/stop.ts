@@ -1,15 +1,15 @@
-import { APIGatewayProxyResult } from 'aws-lambda';
+import { Response } from 'express';
 import { respond } from '../helpers/respond';
 import store from '../helpers/store';
 
-export default async (): Promise<APIGatewayProxyResult> => {
+export default async (res: Response): Promise<void> => {
     const summary = await store.getValueForKey('current');
     if (!summary || summary.length <= 0) {
-        return respond('You\'re not scoping anything right now. Start by running `/scope start <summary>`.');
+        return respond(res, 'You\'re not scoping anything right now. Start by running `/scope start <summary>`.');
     }
     const responses = await store.getAllHashValues(summary);
     if (!responses || Object.keys(responses).length === 0) {
-        return respond(`No one scoped the issue: ${summary}`);
+        return respond(res, `No one scoped the issue: ${summary}`);
     }
 
     const firstValue = parseInt(Object.values(responses)[0], 10);
@@ -29,5 +29,5 @@ export default async (): Promise<APIGatewayProxyResult> => {
     const disagreeText = 'The team does not agree on the score. Feel free to update your score with `/scope <score>` and run `/scope stop` again.';
     const result = allSame ? `The team agrees! Score: *${firstValue}*` :  disagreeText;
     const finalString = `Results for: *${summary}*\n\n${allScores}\n\n${result}`;
-    return respond(finalString, false);
+    return respond(res, finalString, false);
 };

@@ -76,17 +76,21 @@ const isValidMessage = (message: Message): boolean => {
     );
 };
 
-const makeMessage = (body: string): Message | null => {
-    const query = querystring.parse(body);
-    console.log(`parsed slack message: ${JSON.stringify(query)}`);
+const makeMessageFromString = (body: string): Message | null => {
+    const object = querystring.parse(body);
+    console.log(`parsed slack message: ${JSON.stringify(object)}`);
+    return makeMessage(object);
+};
+
+const makeMessage = (object: any): Message | null => {
     const message: Message = {
-        teamId: query.team_id as string,
-        channelId: query.channel_id as string,
-        userId: query.user_id as string,
-        userName: query.user_name as string,
-        command: query.command as string,
-        text: query.text as string,
-        responseURL: query.response_url as string,
+        teamId: object.team_id as string,
+        channelId: object.channel_id as string,
+        userId: object.user_id as string,
+        userName: object.user_name as string,
+        command: object.command as string,
+        text: object.text as string,
+        responseURL: object.response_url as string,
     };
     return isValidMessage(message) ? message : null;
 };
@@ -100,6 +104,7 @@ export {
     CheckMessageContext,
     StopMessageContext,
     HelpMessageContext,
+    makeMessageFromString,
     makeMessage,
     getMessageContext,
 };

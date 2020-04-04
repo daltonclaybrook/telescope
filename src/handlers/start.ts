@@ -1,9 +1,9 @@
-import { APIGatewayProxyResult } from 'aws-lambda';
+import { Response } from 'express';
 import { StartMessageContext } from '../helpers/message';
 import { respond } from '../helpers/respond';
 import store from '../helpers/store';
 
-export default async (context: StartMessageContext): Promise<APIGatewayProxyResult> => {
+export default async (res: Response, context: StartMessageContext): Promise<void> => {
     console.log(`deleting: ${context.summary}`);
     await store.deleteKey(context.summary);
     console.log(`setting current: ${context.summary}`);
@@ -13,5 +13,5 @@ export default async (context: StartMessageContext): Promise<APIGatewayProxyResu
         'Check progress with `/scope check`\n' +
         'Finished? run `/scope stop` to see the results.\n' +
         '_Happy scoping!_';
-    return respond(response, false);
+    return respond(res, response, false);
 };

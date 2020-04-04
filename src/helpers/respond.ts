@@ -1,24 +1,21 @@
-import { APIGatewayProxyResult } from 'aws-lambda';
-import fetch, { Response } from 'node-fetch';
+import { Response } from 'express';
+import fetch, { Response as FetchResponse } from 'node-fetch';
 
-const respond = (text: string, ephemeral?: boolean, statusCode?: number): APIGatewayProxyResult => {
+const respond = (res: Response, text: string, ephemeral?: boolean, statusCode?: number) => {
     const isEphemeral = (ephemeral !== undefined) ? ephemeral : true;
     const type = (isEphemeral) ? 'ephemeral' : 'in_channel';
-    const payload = {
-        response_type: type,
-        text,
-    };
-    return {
-        statusCode: statusCode || 200,
-        body: JSON.stringify(payload),
-    };
+    res.status(statusCode || 200)
+        .json({
+            response_type: type,
+            text,
+        });
 };
 
-const respondEmpty = (): APIGatewayProxyResult => {
-    return { statusCode: 200, body: '' };
+const respondEmpty = (res: Response) => {
+    res.sendStatus(200);
 };
 
-const sendDelayedResponse = (text: string, url: string, ephemeral?: boolean): Promise<Response> => {
+const sendDelayedResponse = (text: string, url: string, ephemeral?: boolean): Promise<FetchResponse> => {
     console.log(`sending response to url: ${url}`);
     const isEphemeral = (ephemeral !== undefined) ? ephemeral : true;
     const type = (isEphemeral) ? 'ephemeral' : 'in_channel';

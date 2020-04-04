@@ -1,49 +1,51 @@
-import { APIGatewayProxyResult } from 'aws-lambda';
-import debug from './helpers/debug';
 import handlers from './handlers';
 import { getMessageContext, makeMessage, MessageType } from './helpers/message';
 import { respond } from './helpers/respond';
+import express, { Request, Response } from 'express';
+
+const app = express();
+app.use(express.urlencoded());
+
+const PORT = 3000;
 
 interface Event {
     body?: string;
 }
 
-const lambdaHandler = async (event: Event): Promise<APIGatewayProxyResult> => {
+app.post('/', (req: Request, res: Response) => {
+    const body = req.body.urlencoded;
+
     console.log('handling...');
-    const message = makeMessage(event.body || '');
+    const message = makeMessage(body);
     if (!message) {
-        return respond(`invalid message payload`, true, 400);
+        return respond(res, `invalid message payload`, true, 400);
     }
 
     const dontUnderstand = 'I don\'t understand. Try typing `/scope help` for suggestions.';
     const context = getMessageContext(message);
     if (!context) {
-        return respond(dontUnderstand);
+        return respond(res, dontUnderstand);
     }
 
     switch (context.type) {
         case MessageType.Start:
             console.log('handling start...');
-            return handlers.start(context);
+            return handlers.start(res, context);
         case MessageType.Scope:
             console.log('handling scope...');
-            return handlers.scope(message, context);
+            return handlers.scope(res, message, context);
         case MessageType.Check:
             console.log('handling check...');
-            return handlers.check();
+            return handlers.check(res);
         case MessageType.Stop:
             console.log('handling stop...');
-            return handlers.stop();
+            return handlers.stop(res);
         case MessageType.Help:
             console.log('handling help...');
-            return handlers.help();
+            return handlers.help(res);
         default:
-            return respond(dontUnderstand);
+            return respond(res, dontUnderstand);
     }
-};
+});
 
-if (process.env.DEBUG) {
-    debug(lambdaHandler);
-}
-
-exports.handler = lambdaHandler;
+app.listen(PORT, () => console.log(`Example app listening at http://localhost:${PORT}`));
