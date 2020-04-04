@@ -8,7 +8,7 @@ export default async (res: Response, context: StopMessageContext): Promise<void>
     if (!channel) {
         return respond(res, 'You\'re not scoping anything right now. Start by running `/scope start <summary>`.');
     }
-    if (channel.userScopes.length === 0) {
+    if (Object.keys(channel.userScopes).length === 0) {
         return respond(res, `No one scoped the issue: ${channel.summary}`);
     }
 

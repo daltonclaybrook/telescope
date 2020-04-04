@@ -17,7 +17,7 @@ export default async (res: Response, context: CheckMessageContext): Promise<void
         return respond(res, result);
     }
 
-    const folks = users.join(', ');
+    const folks = users.map((id) => `<@${id}>`).join(', ');
     result += `These folks have added scores:\n${folks}`;
     return respond(res, result);
 };
