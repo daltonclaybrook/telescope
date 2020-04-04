@@ -12,7 +12,7 @@ const respond = (res: Response, text: string, ephemeral?: boolean, statusCode?: 
 };
 
 const respondEmpty = (res: Response) => {
-    res.sendStatus(200);
+    res.status(200).send('');
 };
 
 const sendDelayedResponse = (text: string, url: string, ephemeral?: boolean): Promise<FetchResponse> => {

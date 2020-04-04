@@ -4,15 +4,14 @@ import { respond } from './helpers/respond';
 import express, { Request, Response } from 'express';
 
 const app = express();
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const PORT = 3000;
 
 app.post('/', (req: Request, res: Response) => {
-    const body = req.body.urlencoded;
-
     console.log('handling...');
-    const message = makeMessage(body);
+    const message = makeMessage(req.body);
     if (!message) {
         return respond(res, `invalid message payload`, true, 400);
     }
