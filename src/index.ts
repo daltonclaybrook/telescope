@@ -31,10 +31,10 @@ app.post('/', (req: Request, res: Response) => {
             return handlers.scope(res, message, context);
         case MessageType.Check:
             console.log('handling check...');
-            return handlers.check(res);
+            return handlers.check(res, context);
         case MessageType.Stop:
             console.log('handling stop...');
-            return handlers.stop(res);
+            return handlers.stop(res, context);
         case MessageType.Help:
             console.log('handling help...');
             return handlers.help(res);

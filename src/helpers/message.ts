@@ -20,24 +20,29 @@ enum MessageType {
 
 interface StartMessageContext {
     type: MessageType.Start;
+    channelId: string;
     summary: string;
 }
 
 interface ScopeMessageContext {
     type: MessageType.Scope;
+    channelId: string;
     score: number;
 }
 
 interface CheckMessageContext {
     type: MessageType.Check;
+    channelId: string;
 }
 
 interface StopMessageContext {
     type: MessageType.Stop;
+    channelId: string;
 }
 
 interface HelpMessageContext {
     type: MessageType.Help;
+    channelId: string;
 }
 
 type MessageContext = StartMessageContext | ScopeMessageContext | CheckMessageContext | StopMessageContext | HelpMessageContext;
@@ -47,18 +52,19 @@ const getMessageContext = (message: Message): MessageContext | null => {
     if (components.length < 1) { return null; }
     const command = components[0].toLowerCase();
     const score = parseInt(components[0], 10);
+    const channelId = message.channelId;
 
     if (components.length > 1 && command === 'start') {
         const summary = components.slice(1).join(' ');
-        return { type: MessageType.Start, summary };
+        return { type: MessageType.Start, channelId, summary };
     } else if (command === 'check') {
-        return { type: MessageType.Check };
+        return { type: MessageType.Check, channelId };
     } else if (command === 'stop') {
-        return { type: MessageType.Stop };
+        return { type: MessageType.Stop, channelId };
     } else if (command === 'help') {
-        return { type: MessageType.Help };
+        return { type: MessageType.Help, channelId };
     } else if (!isNaN(score)) {
-        return { type: MessageType.Scope, score };
+        return { type: MessageType.Scope, channelId, score };
     } else {
         return null;
     }

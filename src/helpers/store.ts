@@ -7,14 +7,21 @@ const client = redis.createClient({
 });
 
 const setHashValue = promisify(client.hset).bind(client);
-const setValueForKey = promisify(client.set).bind(client);
-const getValueForKey = promisify(client.get).bind(client);
+const getHashValue = promisify(client.hget).bind(client);
 const getAllHashValues = promisify(client.hgetall).bind(client);
-const quit = client.quit.bind(client);
 
-const deleteKey = async (key: string): Promise<number> => {
+const setChannelField = async (channelId: string, field: string, value: string): Promise<number> =>
+    setHashValue(channelId, field, value);
+
+const getChannelField = async (channelId: string, field: string): Promise<string> =>
+    getHashValue(channelId, field);
+
+const getAllChannelFields = async (channelId: string): Promise<{[key: string]: string}> =>
+    getAllHashValues(channelId);
+
+const deleteAllFieldsForChannel = async (channelId: string): Promise<number> => {
     return new Promise((resolve, reject) => {
-        client.del(key, (err: Error | null, reply: number) => {
+        client.del(channelId, (err: Error | null, reply: number) => {
             if (err) {
                 reject(err);
             } else {
@@ -25,10 +32,8 @@ const deleteKey = async (key: string): Promise<number> => {
 };
 
 export default {
-    setHashValue,
-    setValueForKey,
-    getValueForKey,
-    getAllHashValues,
-    deleteKey,
-    quit,
+    setChannelField,
+    getChannelField,
+    getAllChannelFields,
+    deleteAllFieldsForChannel,
 };
