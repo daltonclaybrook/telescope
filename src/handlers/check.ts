@@ -1,6 +1,6 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { respond } from '../respond';
-import store from '../store';
+import { respond } from '../helpers/respond';
+import store from '../helpers/store';
 
 export default async (): Promise<APIGatewayProxyResult> => {
     const summary = await store.getValueForKey('current');

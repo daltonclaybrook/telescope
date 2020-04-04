@@ -1,7 +1,7 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { Message, ScopeMessageContext } from 'src/message';
-import { respond, respondEmpty, sendDelayedResponse } from '../respond';
-import store from '../store';
+import { Message, ScopeMessageContext } from 'src/helpers/message';
+import { respond, respondEmpty, sendDelayedResponse } from '../helpers/respond';
+import store from '../helpers/store';
 
 export default async (message: Message, context: ScopeMessageContext): Promise<APIGatewayProxyResult> => {
     const summary = await store.getValueForKey('current');

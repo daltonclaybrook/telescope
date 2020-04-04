@@ -1,7 +1,7 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { StartMessageContext } from '../message';
-import { respond } from '../respond';
-import store from '../store';
+import { StartMessageContext } from '../helpers/message';
+import { respond } from '../helpers/respond';
+import store from '../helpers/store';
 
 export default async (context: StartMessageContext): Promise<APIGatewayProxyResult> => {
     console.log(`deleting: ${context.summary}`);
