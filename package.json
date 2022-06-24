@@ -21,7 +21,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "node-fetch": "^2.3.0",
+    "node-fetch": "^2.6.7",
     "redis": "^3.0.2"
   }
 }
